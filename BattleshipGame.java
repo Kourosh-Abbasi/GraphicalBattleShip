@@ -14,11 +14,11 @@ public class BattleshipGame extends JFrame {
     private Color buttonColor = new Color(0, 122, 255);
     private Color buttonHoverColor = new Color(10, 132, 255);
     private Color textColor = new Color(242, 242, 247);
-    private String backgroundImagePath = "C:\\Users\\stran\\Desktop\\Battleship\\assets\\images\\clouds-over-the-sea-8k-4096x2304.jpg";
-    private String tileImagePath = "C:\\Users\\stran\\Desktop\\Battleship\\assets\\images\\images.jpg";
+    private String backgroundImagePath = "assets\\images\\backgroundImage.jpg";
+    private String tileImagePath = "assets\\images\\tileImage.jpg";
     private Image backgroundImage;
     private Image tileImage;
-    private String backgroundMusicPath = "C:\\Users\\stran\\Desktop\\Battleship\\assets\\tunes\\gentle-ocean-waves-mix-2018-19693.wav";
+    private String backgroundMusicPath = "assets\\tunes\\backgroundMusic.wav";
     private Clip backgroundMusic;
     private boolean isMusicPlaying = false;
     private float volume = 0.5f;
@@ -82,7 +82,6 @@ public class BattleshipGame extends JFrame {
             backgroundMusic = AudioSystem.getClip();
             backgroundMusic.open(audioInput);
 
-            // تنظیم کنترل حجم صدا
             FloatControl gainControl = (FloatControl) backgroundMusic.getControl(FloatControl.Type.MASTER_GAIN);
             gainControl.setValue(20f * (float) Math.log10(volume));
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
@@ -136,25 +135,21 @@ public class BattleshipGame extends JFrame {
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.insets = new Insets(40, 0, 20, 0);
-        gbc.gridwidth = 2;
+        gbc.insets = new Insets(10, 0, 10, 0);
         mainPanel.add(titleLabel, gbc);
     
         JButton singlePlayerBtn = createMenuButton("Single Player vs Computer");
         JButton twoPlayerBtn = createMenuButton("Two Players");
         JButton exitBtn = createMenuButton("Exit Game");
     
-        gbc.gridwidth = 1;
         gbc.gridy = 1;
-        gbc.insets = new Insets(10, 20, 10, 20);
+        gbc.insets = new Insets(10, 0, 10, 0);
         mainPanel.add(singlePlayerBtn, gbc);
     
-        gbc.gridx = 1;
+        gbc.gridy = 2;
         mainPanel.add(twoPlayerBtn, gbc);
     
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
+        gbc.gridy = 3;
         mainPanel.add(exitBtn, gbc);
     
         singlePlayerBtn.addActionListener(_ -> {
@@ -171,7 +166,7 @@ public class BattleshipGame extends JFrame {
     
         exitBtn.addActionListener(_ -> System.exit(0));
     
-        JPanel volumePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel volumePanel = new JPanel(new GridBagLayout());
         volumePanel.setOpaque(false);
     
         JLabel volumeLabel = new JLabel("Volume:");
@@ -180,8 +175,8 @@ public class BattleshipGame extends JFrame {
     
         volumeSlider = new JSlider(0, 100, 50);
         volumeSlider.setPreferredSize(new Dimension(150, 20));
-        volumeSlider.setBackground(new Color(0, 0, 0, 0));
-        volumeSlider.setForeground(textColor);
+        volumeSlider.setBorder(null);
+        volumeSlider.setFocusable(false);
         volumeSlider.addChangeListener(_ -> {
             float newVolume = volumeSlider.getValue() / 100f;
             setVolume(newVolume);
@@ -214,13 +209,15 @@ public class BattleshipGame extends JFrame {
             }
         });
     
-        volumePanel.add(volumeLabel);
-        volumePanel.add(volumeSlider);
-        volumePanel.add(musicToggleBtn);
-    
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
+        gbc.gridy = 0;
+        volumePanel.add(volumeLabel, gbc);
+        gbc.gridy = 1;
+        volumePanel.add(volumeSlider, gbc);
+        gbc.gridy = 2;
+        volumePanel.add(musicToggleBtn, gbc);
+    
+        gbc.gridy = 4;
         mainPanel.add(volumePanel, gbc);
     
         add(mainPanel, BorderLayout.CENTER);
@@ -234,7 +231,6 @@ public class BattleshipGame extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
-                // رسم پس‌زمینه
                 if (getModel().isArmed()) {
                     g2.setColor(buttonColor.darker());
                 } else if (getModel().isRollover()) {
@@ -244,14 +240,13 @@ public class BattleshipGame extends JFrame {
                 }
                 g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 
-                // رسم متن با رنگ سفید و سایه
-                g2.setColor(new Color(0, 0, 0, 100)); // سایه متن
+                g2.setColor(new Color(0, 0, 0, 100));
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(getText())) / 2;
                 int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
                 g2.drawString(getText(), x+1, y+1);
                 
-                g2.setColor(Color.WHITE); // رنگ اصلی متن
+                g2.setColor(Color.WHITE);
                 g2.drawString(getText(), x, y);
                 
                 g2.dispose();
@@ -504,11 +499,9 @@ public class BattleshipGame extends JFrame {
                             int x = (getWidth() - fm.stringWidth(getText())) / 2;
                             int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
                             
-                            // رسم سایه متن
                             g2.setColor(new Color(0, 0, 0, 100));
                             g2.drawString(getText(), x+1, y+1);
                             
-                            // رسم متن اصلی با رنگ سفید
                             g2.setColor(Color.WHITE);
                             g2.drawString(getText(), x, y);
                         }
@@ -528,7 +521,7 @@ public class BattleshipGame extends JFrame {
                 board[i][j].setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
                 board[i][j].setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
                 board[i][j].setBackground(oceanColor);
-                board[i][j].setForeground(Color.WHITE); // تنظیم رنگ متن به سفید
+                board[i][j].setForeground(Color.WHITE);
                 board[i][j].setOpaque(false);
                 board[i][j].setCursor(new Cursor(Cursor.HAND_CURSOR));
                 
@@ -570,14 +563,12 @@ public class BattleshipGame extends JFrame {
     private void highlightShipPlacement(int x, int y, int size, boolean horizontal) {
         JButton[][] currentBoard = !player1PlacementComplete ? player1Board : player2Board;
 
-        // ابتدا همه هایلایت‌ها را پاک کنید
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 currentBoard[i][j].setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
             }
         }
 
-        // هایلایت کردن سلول‌های انتخاب شده برای کشتی
         for (int i = 0; i < size; i++) {
             int nx = horizontal ? x + i : x;
             int ny = horizontal ? y : y + i;
@@ -776,11 +767,9 @@ public class BattleshipGame extends JFrame {
         mainGamePanel.setOpaque(false);
         mainGamePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     
-        // ایجاد تخته‌های جدید با وضعیت فعلی
         JButton[][] newPlayer1Board = createBoard(false, false);
         JButton[][] newPlayer2Board = createBoard(false, false);
     
-        // کپی وضعیت تخته‌های قبلی به تخته‌های جدید
         if (player1Board != null) {
             for (int i = 0; i < GRID_SIZE; i++) {
                 for (int j = 0; j < GRID_SIZE; j++) {
@@ -808,10 +797,9 @@ public class BattleshipGame extends JFrame {
         player1Board = newPlayer1Board;
         player2Board = newPlayer2Board;
     
-        // فعال کردن تخته مناسب برای حمله
         if (player1Turn) {
-            player2Board = createBoard(false, true); // تخته حریف را برای حمله فعال کنید
-            // کپی وضعیت قبلی
+            player2Board = createBoard(false, true);
+
             for (int i = 0; i < GRID_SIZE; i++) {
                 for (int j = 0; j < GRID_SIZE; j++) {
                     if (newPlayer2Board[i][j].getBackground() == hitColor ||
@@ -822,8 +810,8 @@ public class BattleshipGame extends JFrame {
                 }
             }
         } else {
-            player1Board = createBoard(false, true); // تخته حریف را برای حمله فعال کنید
-            // کپی وضعیت قبلی
+            player1Board = createBoard(false, true); 
+
             for (int i = 0; i < GRID_SIZE; i++) {
                 for (int j = 0; j < GRID_SIZE; j++) {
                     if (newPlayer1Board[i][j].getBackground() == hitColor ||
@@ -894,21 +882,17 @@ public class BattleshipGame extends JFrame {
                 if (player1Board[i][j].getBackground() == hitColor) {
                     player1Board[i][j].setText("💥");
                     player1Board[i][j].setBackground(hitColor);
-                    // player1Board[i][j].setForeground(Color.WHITE);
                 } else if (player1Board[i][j].getBackground() == missColor) {
                     player1Board[i][j].setText("🌊");
                     player1Board[i][j].setBackground(missColor);
-                    // player1Board[i][j].setForeground(Color.WHITE);
                 }
     
                 if (player2Board[i][j].getBackground() == hitColor) {
                     player2Board[i][j].setText("💥");
                     player2Board[i][j].setBackground(hitColor);
-                    // player2Board[i][j].setForeground(Color.WHITE);
                 } else if (player2Board[i][j].getBackground() == missColor) {
                     player2Board[i][j].setText("🌊");
                     player2Board[i][j].setBackground(missColor);
-                    // player2Board[i][j].setForeground(Color.WHITE);
                 }
             }
         }
@@ -1063,6 +1047,8 @@ private void handleShot(int x, int y) {
         currentShipSize = shipSizes[0];
         player1PlacementComplete = false;
         player2PlacementComplete = false;
+        player1Board = createBoard(player1PlacementComplete, rootPaneCheckingEnabled);
+        player2Board = createBoard(player1PlacementComplete, rootPaneCheckingEnabled);
         getContentPane().removeAll();
 
         stopBackgroundMusic();
